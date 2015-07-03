@@ -10,7 +10,7 @@ Runs on PHP5.5+ using the GIFEncoder Version 2.0 by László Zsidi
 ##Using the Generator
 
 At the endpoint you'd like to use simply add the following PHP
-```
+```php
 <?php
   require(countdown.php);
   //Holds the design - This could be either hard coded or read in from a URL / resource
