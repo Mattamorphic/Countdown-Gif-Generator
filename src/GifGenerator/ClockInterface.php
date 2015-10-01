@@ -29,9 +29,9 @@ interface ClockInterface {
     public function getSeperator();
 
     /**
-     * @return boolean drop days if true
+     * @return integer length of days countdown date element
      */
-    public function getNodays();
+    public function getDaysLen();
 
     /**
      * @return string font file path

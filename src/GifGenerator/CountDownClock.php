@@ -58,8 +58,11 @@ class CountDownClock {
             }
             //Else format the interval and add a preceeding 0 if it's missing
             else {
-                $days = $this->clock->getNodays() ? '' : '%a' . $seperator;
-                $text = $interval->format($days .'%H'. $seperator .'%I'. $seperator .'%S');
+		$days = '';
+                if ($this->clock->getDaysLen() > 0) {
+                    $days = str_pad($interval->d, $this->clock->getDaysLen(), '0', STR_PAD_LEFT);
+                }
+                $text = $interval->format($days . $seperator . '%H' . $seperator . '%I' . $seperator . '%S');
                 $text = (preg_match('/^[0-9]\:/', $text)) ? '0' . $text : $text;
                 $loops = 0;
             }
@@ -67,17 +70,19 @@ class CountDownClock {
             $image = \imagecreatefrompng($this->clock->getBackgroundImageFilePath());
 
             //overlay the text on this resource
-            imagettftext($image,
-                    $this->clock->getFontsize(),
-                    $this->clock->getFontangle(),
-                    $this->clock->getFontx(),
-                    $this->clock->getFonty(),
-                    imagecolorallocate($image,
-                            $this->clock->getFontr(),
-                            $this->clock->getFontg(),
-                            $this->clock->getFontb()),
-                    $this->clock->getFontFilePath(),
-                    $text);
+            imagettftextSp($image, $this->clock->getFontsize(), $this->clock->getFontangle(), $this->clock->getFontx(), $this->clock->getFonty(), imagecolorallocate($image, $this->clock->getFontr(), $this->clock->getFontg(), $this->clock->getFontb()), $this->clock->getFontFilePath(), $text, 23);
+
+            function imagettftextSp($image, $size, $angle, $x, $y, $color, $font, $text, $spacing = 0) {
+                if ($spacing == 0) {
+                    imagettftext($image, $size, $angle, $x, $y, $color, $font, $text);
+                } else {
+                    $temp_x = $x;
+                    for ($i = 0; $i < strlen($text); $i++) {
+                        $bbox = imagettftext($image, $size, $angle, $temp_x, $y, $color, $font, $text[$i]);
+                        $temp_x += $spacing + ($bbox[2] - $bbox[0]);
+                    }
+                }
+            }
 
             //buffer...
             ob_start();
