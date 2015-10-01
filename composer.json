@@ -1,0 +1,27 @@
+{
+    "name": "tom-power/Countdown-Gif-Generator",
+    "description": "Countdown Clock Generator (GIF) PHP",
+    "type": "library",
+    "keywords": [
+        "countdown",
+        "clock",
+	"generator",
+	"GIF"
+    ],
+    "homepage": "https://github.com/tom-power/Countdown-Gif-Generator",
+    "authors": [
+        {
+            "name": "Tom Power",
+            "email": "tpower21@gmail.com",
+            "homepage": "http://tp21.se"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "GifGenerator": "src/"
+        },
+        "classmap": [
+            "./"
+        ]
+    }
+}
