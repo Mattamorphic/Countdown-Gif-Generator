@@ -26,12 +26,22 @@ interface ClockInterface {
     /**
      * @return string symbol between countdown date elements
      */
-    public function getSeperator();
+    public function getSeparator();
+
+    /**
+     * @return integer spacing between symbol between countdown date elements
+     */
+    public function getSeparatorSpacing();
 
     /**
      * @return integer length of days countdown date element
      */
     public function getDaysLen();
+
+    /**
+     * @return integer spacing between characters
+     */
+    public function getSpacing();
 
     /**
      * @return string font file path

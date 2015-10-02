@@ -50,19 +50,19 @@ class CountDownClock {
         for ($i = 0; $i <= 60; $i++) {
             $interval = date_diff($dates->deadline, $dates->now);
 
-            $seperator = $this->clock->getSeperator();
+            $separator = $this->clock->getSeparator();
             //If we're at or after the deadline - then just 0 the clock
             if ($dates->deadline < $dates->now) {
-                $text = $interval->format('00' . $seperator . '00' . $seperator . '00' . $seperator . '00');
+                $text = $interval->format('00' . $separator . '00' . $separator . '00' . $separator . '00');
                 $loops = 1;
             }
             //Else format the interval and add a preceeding 0 if it's missing
             else {
-		$days = '';
+                $days = '';
                 if ($this->clock->getDaysLen() > 0) {
                     $days = str_pad($interval->d, $this->clock->getDaysLen(), '0', STR_PAD_LEFT);
                 }
-                $text = $interval->format($days . $seperator . '%H' . $seperator . '%I' . $seperator . '%S');
+                $text = $interval->format($days . $separator . '%H' . $separator . '%I' . $separator . '%S');
                 $text = (preg_match('/^[0-9]\:/', $text)) ? '0' . $text : $text;
                 $loops = 0;
             }
@@ -70,19 +70,7 @@ class CountDownClock {
             $image = \imagecreatefrompng($this->clock->getBackgroundImageFilePath());
 
             //overlay the text on this resource
-            imagettftextSp($image, $this->clock->getFontsize(), $this->clock->getFontangle(), $this->clock->getFontx(), $this->clock->getFonty(), imagecolorallocate($image, $this->clock->getFontr(), $this->clock->getFontg(), $this->clock->getFontb()), $this->clock->getFontFilePath(), $text, 23);
-
-            function imagettftextSp($image, $size, $angle, $x, $y, $color, $font, $text, $spacing = 0) {
-                if ($spacing == 0) {
-                    imagettftext($image, $size, $angle, $x, $y, $color, $font, $text);
-                } else {
-                    $temp_x = $x;
-                    for ($i = 0; $i < strlen($text); $i++) {
-                        $bbox = imagettftext($image, $size, $angle, $temp_x, $y, $color, $font, $text[$i]);
-                        $temp_x += $spacing + ($bbox[2] - $bbox[0]);
-                    }
-                }
-            }
+            $this->imagettftextSp($image, $this->clock->getFontsize(), $this->clock->getFontangle(), $this->clock->getFontx(), $this->clock->getFonty(), imagecolorallocate($image, $this->clock->getFontr(), $this->clock->getFontg(), $this->clock->getFontb()), $this->clock->getFontFilePath(), $text, $this->clock->getSpacing(), $this->clock->getSeparator(), $this->clock->getSeparatorSpacing());
 
             //buffer...
             ob_start();
@@ -105,6 +93,19 @@ class CountDownClock {
         //generate a new GIF given the frames, the delay and the loop counter
         $gif = new AnimatedGif($frames, $delays, $loops);
         $gif->display();
+    }
+
+    function imagettftextSp($image, $size, $angle, $x, $y, $color, $font, $text, $spacing = 0, $separator = null, $separatorSpacing = 0) {
+        if ($spacing == 0) {
+            imagettftext($image, $size, $angle, $x, $y, $color, $font, $text);
+        } else {
+            $temp_x = $x;
+            for ($i = 0; $i < strlen($text); $i++) {
+                $bbox = imagettftext($image, $size, $angle, $temp_x, $y, $color, $font, $text[$i]);
+                $next = $i + 1 < strlen($text) ? $text[$i + 1] : null;
+                $temp_x += ($text[$i] == $separator || $next == $separator ? $separatorSpacing : $spacing) + ($bbox[2] - $bbox[0]);
+            }
+        }
     }
 
 }
