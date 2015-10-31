@@ -18,6 +18,8 @@ class CountDownClock {
 
     private $dates;
     private $clock;
+    private $digitWidth;
+    private $seperatorWidth;
 
     /**
      * Constructor takes clock object as argument
@@ -33,6 +35,15 @@ class CountDownClock {
         $this->dates->now->setTimeZone(new \DateTimeZone($clock->getTimeZone()));
 
         $this->clock = $clock;
+
+        // get fixed widths
+        $this->digitWidth = $this->getWidth('0');
+        $this->seperatorWidth = $this->getWidth($this->clock->getSeparator());
+    }
+
+    private function getWidth($char) {
+        $bbox = imagettfbbox($this->clock->getFontsize(), $this->clock->getFontangle(), $this->clock->getFontFilePath(), $char);
+        return $bbox[2] - $bbox[0];
     }
 
     /**
@@ -46,24 +57,26 @@ class CountDownClock {
 
         //Getting some data from the properties
         $dates = $this->dates;
+
+        $separator = $this->clock->getSeparator();
+
         //Count through our frames
         for ($i = 0; $i <= 60; $i++) {
+
             $interval = date_diff($dates->deadline, $dates->now);
 
-            $separator = $this->clock->getSeparator();
             //If we're at or after the deadline - then just 0 the clock
             if ($dates->deadline < $dates->now) {
-                $text = $interval->format('00' . $separator . '00' . $separator . '00' . $separator . '00');
+                $text = $interval->format(str_pad('0', $this->clock->getDaysLen(), '0') . $separator . '00' . $separator . '00' . $separator . '00');
                 $loops = 1;
             }
             //Else format the interval and add a preceeding 0 if it's missing
             else {
                 $days = '';
                 if ($this->clock->getDaysLen() > 0) {
-                    $days = str_pad($interval->d, $this->clock->getDaysLen(), '0', STR_PAD_LEFT);
+                    $days = str_pad($interval->days, $this->clock->getDaysLen(), '0', STR_PAD_LEFT);
                 }
                 $text = $interval->format($days . $separator . '%H' . $separator . '%I' . $separator . '%S');
-                $text = (preg_match('/^[0-9]\:/', $text)) ? '0' . $text : $text;
                 $loops = 0;
             }
             //create a new image resource
@@ -96,16 +109,25 @@ class CountDownClock {
     }
 
     function imagettftextSp($image, $size, $angle, $x, $y, $color, $font, $text, $spacing = 0, $separator = null, $separatorSpacing = 0) {
-        if ($spacing == 0) {
+        if ($spacing == 0 && $separatorSpacing == 0) {
             imagettftext($image, $size, $angle, $x, $y, $color, $font, $text);
         } else {
-            $temp_x = $x;
+            $thisX = $x;
             for ($i = 0; $i < strlen($text); $i++) {
-                $bbox = imagettftext($image, $size, $angle, $temp_x, $y, $color, $font, $text[$i]);
-                $next = $i + 1 < strlen($text) ? $text[$i + 1] : null;
-                $temp_x += ($text[$i] == $separator || $next == $separator ? $separatorSpacing : $spacing) + ($bbox[2] - $bbox[0]);
+                imagettftext($image, $size, $angle, $thisX, $y, $color, $font, $text[$i]);
+                $thisSpacing = $this->isSeperatorSpacing($text, $i, $separator) ? $separatorSpacing : $spacing;
+                $thisWidth = $text[$i] == $separator ? $this->seperatorWidth : $this->digitWidth;
+                $thisX += $thisSpacing + $thisWidth;
             }
         }
+    }
+
+    function isSeperatorSpacing($text, $i, $separator) {
+        return $this->getNextChar($text, $i) == $separator || $text[$i] == $separator;
+    }
+
+    function getNextChar($text, $i) {
+        return $i + 1 < strlen($text) ? $text[$i + 1] : null;
     }
 
 }
