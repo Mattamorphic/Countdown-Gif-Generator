@@ -18,8 +18,8 @@ class CountDownClock {
 
     private $dates;
     private $clock;
-    private $digitWidth;
-    private $seperatorWidth;
+    private $fixedWidth;
+    private $offsets;
 
     /**
      * Constructor takes clock object as argument
@@ -36,9 +36,20 @@ class CountDownClock {
 
         $this->clock = $clock;
 
-        // get fixed widths
-        $this->digitWidth = $this->getWidth('0');
-        $this->seperatorWidth = $this->getWidth($this->clock->getSeparator());
+        // get fixed width
+        $this->fixedWidth = $this->getWidth('0');
+
+        // get offsets
+        for ($index = 0; $index < 10; $index++) {
+            $strIndex = (string) $index;
+            $this->offsets[$strIndex] = $this->getOffset($strIndex);
+        }
+        $this->offsets[$this->clock->getSeparator()] = $this->getOffset($this->clock->getSeparator());
+    }
+
+    private function getOffset($char) {
+        $width = $this->getWidth($char);
+        return ($this->fixedWidth - $width) / 2;
     }
 
     private function getWidth($char) {
@@ -114,10 +125,11 @@ class CountDownClock {
         } else {
             $thisX = $x;
             for ($i = 0; $i < strlen($text); $i++) {
+                $thisX += $this->offsets[$text[$i]];
                 imagettftext($image, $size, $angle, $thisX, $y, $color, $font, $text[$i]);
+                $thisX -= $this->offsets[$text[$i]];
                 $thisSpacing = $this->isSeperatorSpacing($text, $i, $separator) ? $separatorSpacing : $spacing;
-                $thisWidth = $text[$i] == $separator ? $this->seperatorWidth : $this->digitWidth;
-                $thisX += $thisSpacing + $thisWidth;
+                $thisX += $thisSpacing + $this->fixedWidth;
             }
         }
     }
