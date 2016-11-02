@@ -1,5 +1,7 @@
 <?php
 
+namespace GifGenerator;
+
 /*
   :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
   :: Formerly known as:::
@@ -46,7 +48,7 @@ class AnimatedGif {
      * How many times to loop? 0 = infinite
      * @var int
      */
-    private $number_of_loops = 0;
+    private $number_of_loops = 1;
 
     /**
      *
