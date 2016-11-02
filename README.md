@@ -9,6 +9,7 @@ Runs on PHP5.5+ using the GIFEncoder Version 2.0 by László Zsidi, Fork of http
 
 ##Using the Generator
 
+```
   Implement ClockInterface then:
    
   $clockItf = new Clock();
