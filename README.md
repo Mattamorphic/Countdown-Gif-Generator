@@ -23,5 +23,5 @@ Runs on PHP5.5+ using the GIFEncoder Version 2.0 by László Zsidi, Fork of http
 
 ##Contributors
 
-https://github.com/tom-power
-https://github.com/matt-barber
+- https://github.com/tom-power
+- https://github.com/matt-barber
