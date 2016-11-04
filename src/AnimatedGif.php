@@ -1,6 +1,7 @@
 <?php
 
-namespace GifGenerator;
+namespace mattbarber\CountdownClock;
+
 
 /*
   :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

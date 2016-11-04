@@ -1,10 +1,11 @@
 <?php
 
-namespace GifGenerator;
+namespace mattbarber\CountdownClock;
+
 
 /**
  *
- * @author tp
+ * @author tp <https://github.com/tom-power>
  */
 interface ClockInterface {
 
@@ -84,8 +85,14 @@ interface ClockInterface {
     public function getFontangle();
 
     /**
-     * @return string background image file path
+     * @return string background image file path (set to boolean false to use color)
      */
     public function getBackgroundImageFilePath();
+
+    /**
+     * @return array [r, g, b] integer array if getBackgroundImageFilePath returns false 
+     *
+     */
+    public function getBackgroundImageColor();
 
 }
